@@ -1,4 +1,9 @@
-import type { DashboardData, TimeRange } from "./types";
+import type {
+  Channel,
+  DashboardData,
+  DashboardInsightData,
+  TimeRange,
+} from "./types";
 
 const baseRows: DashboardData["rows"] = [
   {
@@ -48,6 +53,30 @@ const baseRows: DashboardData["rows"] = [
   },
 ];
 
+const bulkRows: DashboardData["rows"] = Array.from({ length: 360 }).map(
+  (_, index) => {
+    const channelCycle: Channel[] = [
+      "Paid Search",
+      "Email",
+      "Organic",
+      "Social",
+      "Referral",
+    ];
+    const channel = channelCycle[index % channelCycle.length];
+    const seed = index + 1;
+
+    return {
+      id: `bulk-${seed}`,
+      campaign: `${channel} Campaign ${String(seed).padStart(3, "0")}`,
+      channel,
+      sessions: 600 + ((seed * 73) % 4200),
+      conversionRate: Number((1.8 + ((seed * 17) % 420) / 100).toFixed(2)),
+      revenue: 4000 + ((seed * 521) % 42000),
+      change: Number((((seed % 29) - 14) * 0.8).toFixed(1)),
+    };
+  },
+);
+
 const rangeFactor: Record<TimeRange, number> = {
   "7d": 0.42,
   "30d": 1,
@@ -81,7 +110,7 @@ function buildTrends(range: TimeRange): DashboardData["trends"] {
 export function getDashboardMockData(range: TimeRange): DashboardData {
   const factor = rangeFactor[range];
 
-  const rows = baseRows.map((row) => ({
+  const rows = [...baseRows, ...bulkRows].map((row) => ({
     ...row,
     sessions: Math.round(row.sessions * factor),
     revenue: Math.round(row.revenue * factor),
@@ -127,5 +156,29 @@ export function getDashboardMockData(range: TimeRange): DashboardData {
         trendDelta: -0.7,
       },
     ],
+  };
+}
+
+export function getDashboardInsightMockData(
+  range: TimeRange,
+): DashboardInsightData {
+  const data = getDashboardMockData(range);
+
+  const byChannel = new Map<Channel, { revenue: number; sessions: number }>();
+  for (const row of data.rows) {
+    const current = byChannel.get(row.channel) ?? { revenue: 0, sessions: 0 };
+    current.revenue += row.revenue;
+    current.sessions += row.sessions;
+    byChannel.set(row.channel, current);
+  }
+
+  return {
+    range,
+    trends: data.trends,
+    channelMix: Array.from(byChannel.entries()).map(([channel, value]) => ({
+      channel,
+      revenue: value.revenue,
+      sessions: value.sessions,
+    })),
   };
 }

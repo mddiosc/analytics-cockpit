@@ -1,6 +1,7 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { MemoryRouter } from "react-router-dom";
 import { beforeEach, describe, expect, it } from "vitest";
 
 import { DashboardPage } from "./DashboardPage";
@@ -17,7 +18,9 @@ function renderDashboard() {
 
   return render(
     <QueryClientProvider client={client}>
-      <DashboardPage />
+      <MemoryRouter>
+        <DashboardPage />
+      </MemoryRouter>
     </QueryClientProvider>,
   );
 }
@@ -48,5 +51,23 @@ describe("DashboardPage", () => {
     });
 
     expect(screen.queryByText("Affiliate Relaunch")).not.toBeInTheDocument();
+  });
+
+  it("restores filters from URL state", async () => {
+    render(
+      <QueryClientProvider client={new QueryClient()}>
+        <MemoryRouter
+          initialEntries={["/?range=7d&q=Organic&channels=Organic&minCv=2.2"]}
+        >
+          <DashboardPage />
+        </MemoryRouter>
+      </QueryClientProvider>,
+    );
+
+    await screen.findByDisplayValue("Organic");
+    expect(screen.getByRole("button", { name: "Organic" })).toHaveAttribute(
+      "aria-pressed",
+      "true",
+    );
   });
 });

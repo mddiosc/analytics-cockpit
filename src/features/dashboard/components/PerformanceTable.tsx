@@ -1,11 +1,11 @@
 import {
   flexRender,
   getCoreRowModel,
-  getFilteredRowModel,
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { useMemo, useState } from "react";
+import { useVirtualizer } from "@tanstack/react-virtual";
+import { useMemo, useRef, useState } from "react";
 import type { ColumnDef, SortingState } from "@tanstack/react-table";
 
 import type { CampaignPerformanceRow } from "../types";
@@ -29,7 +29,7 @@ export function PerformanceTable({
   search,
   onSearchChange,
 }: Readonly<PerformanceTableProps>) {
-  const noOp = () => {};
+  const tableRef = useRef<HTMLDivElement>(null);
   const [sorting, setSorting] = useState<SortingState>([]);
 
   const columns = useMemo<ColumnDef<CampaignPerformanceRow>[]>(
@@ -76,16 +76,33 @@ export function PerformanceTable({
     columns,
     state: {
       sorting,
-      globalFilter: search,
     },
     onSortingChange: setSorting,
-    onGlobalFilterChange: noOp,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
   });
 
   const rowCount = table.getRowModel().rows.length;
+  const rowsForVirtualizer = table.getRowModel().rows;
+
+  const virtualizer = useVirtualizer({
+    count: rowsForVirtualizer.length,
+    estimateSize: () => 46,
+    getScrollElement: () => tableRef.current,
+    overscan: 10,
+  });
+
+  const virtualRows = virtualizer.getVirtualItems();
+  const hasVirtualRows = virtualRows.length > 0;
+  const renderedRows = hasVirtualRows
+    ? virtualRows.map((virtualRow) => rowsForVirtualizer[virtualRow.index])
+    : rowsForVirtualizer;
+  const topPadding = virtualRows.length > 0 ? (virtualRows[0]?.start ?? 0) : 0;
+  const bottomPadding =
+    virtualRows.length > 0
+      ? virtualizer.getTotalSize() -
+        (virtualRows[virtualRows.length - 1]?.end ?? 0)
+      : 0;
 
   return (
     <section
@@ -110,7 +127,7 @@ export function PerformanceTable({
           No campaigns match your current filters. Clear search to reset.
         </p>
       ) : (
-        <div className="table-scroll">
+        <div className="table-scroll" ref={tableRef}>
           <table>
             <thead>
               {table.getHeaderGroups().map((headerGroup) => (
@@ -145,18 +162,32 @@ export function PerformanceTable({
               ))}
             </thead>
             <tbody>
-              {table.getRowModel().rows.map((row) => (
-                <tr key={row.id}>
-                  {row.getVisibleCells().map((cell) => (
-                    <td key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext(),
-                      )}
-                    </td>
-                  ))}
+              {hasVirtualRows && topPadding > 0 ? (
+                <tr>
+                  <td style={{ height: `${topPadding}px` }} colSpan={6} />
                 </tr>
-              ))}
+              ) : null}
+
+              {renderedRows.map((row) => {
+                return (
+                  <tr key={row.id}>
+                    {row.getVisibleCells().map((cell) => (
+                      <td key={cell.id}>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext(),
+                        )}
+                      </td>
+                    ))}
+                  </tr>
+                );
+              })}
+
+              {hasVirtualRows && bottomPadding > 0 ? (
+                <tr>
+                  <td style={{ height: `${bottomPadding}px` }} colSpan={6} />
+                </tr>
+              ) : null}
             </tbody>
           </table>
         </div>

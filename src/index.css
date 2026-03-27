@@ -85,6 +85,76 @@ input {
   gap: 1.1rem;
 }
 
+.advanced-filters,
+.preset-panel {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  padding: 1rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.advanced-filters {
+  display: grid;
+  gap: 0.8rem;
+  grid-template-columns: 2fr repeat(3, minmax(0, 1fr));
+}
+
+.advanced-filters__channels p {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  margin-bottom: 0.4rem;
+}
+
+.advanced-filters__chips {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.advanced-filters label {
+  display: grid;
+  gap: 0.35rem;
+  color: var(--text-secondary);
+  font-size: 0.86rem;
+}
+
+.advanced-filters input,
+.preset-panel input,
+.preset-panel select {
+  border: 1px solid var(--border);
+  border-radius: 0.65rem;
+  padding: 0.42rem 0.65rem;
+}
+
+.preset-panel {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.preset-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.8rem;
+}
+
+.preset-actions label,
+.preset-save {
+  display: grid;
+  gap: 0.35rem;
+  color: var(--text-secondary);
+  font-size: 0.88rem;
+}
+
+.preset-save button {
+  justify-self: start;
+  border: 1px solid var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent);
+  border-radius: 0.5rem;
+  padding: 0.32rem 0.7rem;
+}
+
 .dashboard-toolbar {
   display: flex;
   justify-content: flex-end;
@@ -188,12 +258,43 @@ input {
 }
 
 .trend-panel,
-.table-panel {
+.table-panel,
+.chart-panel {
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: 1rem;
   padding: 1rem;
   box-shadow: var(--shadow-sm);
+}
+
+.insights-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.chart-canvas {
+  margin-top: 0.8rem;
+  min-height: 320px;
+}
+
+.chart-status {
+  color: var(--text-secondary);
+  margin-top: 0.8rem;
+}
+
+.chart-status--error {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.chart-status--error button {
+  border: 1px solid var(--danger);
+  color: var(--danger);
+  background: transparent;
+  border-radius: 0.45rem;
+  padding: 0.3rem 0.6rem;
 }
 
 .trend-copy {
@@ -252,7 +353,8 @@ input {
 
 .table-scroll {
   margin-top: 0.9rem;
-  overflow-x: auto;
+  overflow: auto;
+  max-height: 520px;
 }
 
 table {
@@ -304,6 +406,18 @@ th {
     align-items: stretch;
   }
 
+  .advanced-filters {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .preset-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .insights-grid {
+    grid-template-columns: 1fr;
+  }
+
   .table-toolbar input {
     min-width: 0;
     width: 100%;
@@ -326,5 +440,9 @@ th {
 
   .chip {
     flex: 1 1 auto;
+  }
+
+  .advanced-filters {
+    grid-template-columns: 1fr;
   }
 }

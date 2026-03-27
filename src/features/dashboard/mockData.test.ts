@@ -22,4 +22,9 @@ describe("getDashboardMockData", () => {
 
     expect(quarterRevenue).toBeGreaterThan(weekRevenue);
   });
+
+  it("provides large dataset suitable for virtualization", () => {
+    const data = getDashboardMockData("30d");
+    expect(data.rows.length).toBeGreaterThan(200);
+  });
 });

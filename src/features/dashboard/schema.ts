@@ -6,6 +6,14 @@ export const timeRangeSchema = z.union([
   z.literal("90d"),
 ]);
 
+export const channelSchema = z.union([
+  z.literal("Paid Search"),
+  z.literal("Email"),
+  z.literal("Organic"),
+  z.literal("Social"),
+  z.literal("Referral"),
+]);
+
 const kpiMetricSchema = z.object({
   id: z.string(),
   label: z.string(),
@@ -27,17 +35,41 @@ const trendPointSchema = z.object({
 const campaignPerformanceRowSchema = z.object({
   id: z.string(),
   campaign: z.string(),
-  channel: z.union([
-    z.literal("Paid Search"),
-    z.literal("Email"),
-    z.literal("Organic"),
-    z.literal("Social"),
-    z.literal("Referral"),
-  ]),
+  channel: channelSchema,
   sessions: z.number(),
   conversionRate: z.number(),
   revenue: z.number(),
   change: z.number(),
+});
+
+export const dashboardFiltersSchema = z.object({
+  range: timeRangeSchema,
+  search: z.string(),
+  channels: z.array(channelSchema),
+  minConversionRate: z.number().nullable(),
+  revenueMin: z.number().nullable(),
+  revenueMax: z.number().nullable(),
+});
+
+export const dashboardPresetSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  kind: z.union([z.literal("built-in"), z.literal("custom")]),
+  filters: dashboardFiltersSchema,
+});
+
+export const dashboardPresetsSchema = z.array(dashboardPresetSchema);
+
+export const dashboardInsightDataSchema = z.object({
+  range: timeRangeSchema,
+  channelMix: z.array(
+    z.object({
+      channel: channelSchema,
+      revenue: z.number(),
+      sessions: z.number(),
+    }),
+  ),
+  trends: z.array(trendPointSchema).min(1),
 });
 
 export const dashboardDataSchema = z.object({
