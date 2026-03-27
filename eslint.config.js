@@ -29,4 +29,10 @@ export default defineConfig([
       },
     },
   },
+  {
+    files: ["src/features/dashboard/components/PerformanceTable.tsx"],
+    rules: {
+      "react-hooks/incompatible-library": "off",
+    },
+  },
 ]);

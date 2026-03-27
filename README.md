@@ -1,73 +1,55 @@
-# React + TypeScript + Vite
+# Analytics Cockpit
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Frontend-only analytics product built with React, TypeScript, and Vite. The repository is designed as a senior-level portfolio project with OpenSpec-driven delivery, typed data contracts, and behavior-focused tests.
 
-Currently, two official plugins are available:
+## Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- React 19 + TypeScript + Vite
+- React Router (app shell and routes)
+- TanStack Query (data orchestration)
+- TanStack Table (sorting/filtering exploration table)
+- Zustand (UI filter state)
+- Zod (runtime schema validation)
+- Vitest + Testing Library (unit and component tests)
 
-## React Compiler
+## Getting Started
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+pnpm install
+pnpm dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Open `http://localhost:5173`.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Quality Commands
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+pnpm lint
+pnpm typecheck
+pnpm test:run
+pnpm build
 ```
+
+## Project Structure
+
+```text
+src/
+  app/                 # providers, routing, app shell
+  features/
+    dashboard/         # dashboard domain (api, state, UI, tests)
+  test/                # shared test setup
+```
+
+## OpenSpec Workflow
+
+This repository uses OpenSpec for spec-first change management.
+
+- Current change: `openspec/changes/analytics-cockpit-foundation`
+- Generated artifacts:
+  - `proposal.md`
+  - `design.md`
+  - `specs/analytics-dashboard-shell/spec.md`
+  - `specs/analytics-data-exploration/spec.md`
+  - `tasks.md`
+
+To continue implementation through the spec workflow, use `/opsx-apply` in OpenCode.
